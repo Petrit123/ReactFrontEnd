@@ -7,6 +7,7 @@ class PlayListComponent extends Component {
     state = {
         playLists: [],
         songLists: [],
+        songs:[],
         newPlayListData: {
           id: '',
           name: '',
@@ -17,9 +18,18 @@ class PlayListComponent extends Component {
           name: '',
           description: ''
         },
+        songListData: {
+          title: "",
+          artist: "",
+          album: "",
+          releaseDate: "",
+          downloadDate: ""
+        },
         newPlayListModal: false,
 
-        editPlayListModal: false
+        editPlayListModal: false,
+
+        SongModal: false
       }
     
       componentWillMount(){
@@ -28,6 +38,13 @@ class PlayListComponent extends Component {
             playLists:response.data
           });
         });
+
+        axios.get('http://localhost:8080/playlist').then((response) =>{
+          this.setState({
+            songs:response.data
+          });
+        });
+
       }
       toggleNewPlayListModal() {
         this.setState({
@@ -37,6 +54,12 @@ class PlayListComponent extends Component {
       toggleeditPlayListModal() {
         this.setState({
           editPlayListModal: !this.state.editPlayListModal
+        })
+      }
+
+      toggleSongModal() {
+        this.setState({
+          SongModal: !this.state.songModal
         })
       }
     
@@ -106,6 +129,18 @@ class PlayListComponent extends Component {
                   });
       }
 
+      getSongs(id){
+        axios.get('http://localhost:8080/songs', {
+          params: {
+            id: id
+          }
+        }).then((response) =>{
+          console.log(response.data);
+          this.setState({
+            songLists:response.data
+          });
+        });
+      }
 
       _refreshPage(){
         axios.get('http://localhost:8080/playlist').then((response) => {
@@ -119,7 +154,7 @@ class PlayListComponent extends Component {
             let playLists = this.state.playLists.map((playList) => {              
               return(
                   <tr key={playList.id}>            
-                  <td>{playList.name}</td>   
+                  <h3 className="leftMenu"  onClick={this.getSongs.bind(this, playList._id)}><td>{playList.name}</td></h3>
                   <td>
                     <Button color="success" size="sm" className="mr-2" onClick={this.editPlayList.bind(this, playList._id, playList.name, playList.description)}>Edit</Button>
                     <Button color="danger" size="sm" onClick={this.deletePlayList.bind(this, playList._id)}>Delete</Button>
@@ -127,6 +162,27 @@ class PlayListComponent extends Component {
                 </tr>
                 ) 
             })
+
+            // let songLists = ""
+            // let songs = this.state.songs.map((song) => {
+            //   // (typeof (song.songs) == 'undefined') ?
+            //   songLists = song.songs.map((songList) => {
+            //     return (
+            //       <tr key={songList.id}>
+            //         <td>{songList.title}</td>
+            //         <td>{songList.artist}</td>
+            //         <td>{songList.album}</td>
+            //         <td>{songList.ReleaseDate}</td>
+            //         <td>{songList.DownloadDate}</td>
+            //         <td>
+            //           <Button color="success" size="sm" className="mr-2">Edit</Button>
+            //           <Button color="danger" size="sm">Delete</Button>
+            //         </td>
+            //       </tr>
+        
+            //     )
+            //   })
+            // });            
             return(
             <div>
               <meta charSet="UTF-8" />
@@ -160,12 +216,12 @@ class PlayListComponent extends Component {
             <Table>
           <thead>
             <tr>
-              <th>Name</th>
+              <th style={{color: '#888888'}}>Name</th>
             </tr>
           </thead>
 
-          <tbody >
-            {playLists}
+          <tbody style={{color: 'white'}} >
+           {playLists} 
           </tbody>
         </Table>
     
@@ -233,6 +289,25 @@ class PlayListComponent extends Component {
                 <Button color="secondary" onClick={this.toggleeditPlayListModal.bind(this)}>Cancel</Button>
               </ModalFooter>
             </Modal>
+            
+            <Modal isOpen={this.state.SongModal} toggle={this.toggleSongModal.bind(this)}>
+            <Table>
+          <thead>
+            <tr>
+              <th style={{color: '#888888'}}>Title</th>
+              <th style={{color: '#888888'}}>Artist</th>
+              <th style={{color: '#888888'}}>Album</th>
+              <th style={{color: '#888888'}}>Release Date</th>
+              <th style={{color: '#888888'}}>Download Date</th>
+            </tr>
+          </thead>
+
+          <tbody  style={{color: 'red'}}>
+            {/* {songLists} */}
+          </tbody>
+        </Table>
+            </Modal>
+
 
             </div>
             
