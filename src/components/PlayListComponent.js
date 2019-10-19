@@ -18,7 +18,21 @@ class PlayListComponent extends Component {
           name: '',
           description: ''
         },
+        newSongListData: {
+          title: "",
+          artist: "",
+          album: "",
+          releaseDate: "",
+          downloadDate: ""
+        },
         songListData: {
+          title: "",
+          artist: "",
+          album: "",
+          releaseDate: "",
+          downloadDate: ""
+        },
+        editsongListData: {
           title: "",
           artist: "",
           album: "",
@@ -27,9 +41,13 @@ class PlayListComponent extends Component {
         },
         newPlayListModal: false,
 
+        newSongListModal: false,
+
         editPlayListModal: false,
 
-        SongModal: false
+        songModal: false,
+
+        editSongListModal: false
       }
     
       componentWillMount(){
@@ -51,6 +69,11 @@ class PlayListComponent extends Component {
           newPlayListModal: !this.state.newPlayListModal
         })
       }
+      toggleNewSongListModal() {
+        this.setState({
+          newSongListModal: !this.state.newSongListModal
+        })
+      }
       toggleeditPlayListModal() {
         this.setState({
           editPlayListModal: !this.state.editPlayListModal
@@ -59,7 +82,13 @@ class PlayListComponent extends Component {
 
       toggleSongModal() {
         this.setState({
-          SongModal: !this.state.songModal
+          songModal: !this.state.songModal
+        })
+      }
+
+      toggleeditSongListModal(){
+        this.setState({
+          editSongListModal: !this.state.editSongListModal
         })
       }
     
@@ -94,6 +123,28 @@ class PlayListComponent extends Component {
           });
         })
       }
+
+      addNewSong(){
+        let { songLists } = this.state; 
+        fetch('http://localhost:8080/addNewSong', {
+          method: 'POST',
+          headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            title: this.state.songListData.title, artist: this.state.songListData.artist, album: this.state.songListData.album, releaseDate: this.state.songListData.releaseDate, downloadDate: this.state.songListData.downloadDate
+          })
+        }).then((response) => {
+          this._refreshPage();
+          this.setState({
+            songLists, newSongListModal: false, newSongListData: {
+              title: '',
+              artist: '',
+              album: "",
+              releaseDate: "",
+              downloadDate: ""
+            }
+          });
+        })
+      }
       updateSong(){
         let { name, description  } = this.state.editPlayListData;
         // let playLists = this.state.playLists.map((playList) => {
@@ -113,9 +164,35 @@ class PlayListComponent extends Component {
       // })
       }
 
+      updateSongList(){
+        let { title,artist,album,releaseDate,downloadDate  } = this.state.editsongListData;
+        // let playLists = this.state.playLists.map((playList) => {
+          axios.get('http://localhost:8080/update', {
+          params:{
+            id: this.state.editPlayListData.id, name: this.state.editPlayListData.name, description: this.state.editPlayListData.description
+          }
+        }).then((response) => {
+          this._refreshPage();
+          this.setState({
+             editPlayListModal: false, editPlayListData: {
+              name: '',
+              description: ''
+            }
+          });
+        })
+      // })
+      }
+
+
       editPlayList(id,name, description){
         this.setState({
           editPlayListData:{id,name, description,id}, editPlayListModal: ! this.state.editPlayListModal
+        });
+      }
+
+      editSongList(id,title,artist,album,releaseDate,downloadDate){
+        this.setState({
+          editsongListData:{id,title,artist,album,releaseDate,downloadDate}, editSongListModal: ! this.state.editSongListModal
         });
       }
 
@@ -135,9 +212,9 @@ class PlayListComponent extends Component {
             id: id
           }
         }).then((response) =>{
-          console.log(response.data);
+          console.log(response.data.songs);
           this.setState({
-            songLists:response.data
+            songLists:response.data.songs, songModal: !this.state.songModal
           });
         });
       }
@@ -161,6 +238,22 @@ class PlayListComponent extends Component {
                   </td>
                 </tr>
                 ) 
+            })
+
+            let songLists = this.state.songLists.map((songList) => {
+              return(
+                    <tr key={songList.id}>
+                    <td>{songList.title}</td>
+                    <td>{songList.artist}</td>
+                    <td>{songList.album}</td>
+                    <td>{songList.releaseDate}</td>
+                    <td>{songList.downloadDate}</td>
+                    <td>
+                      <Button color="success" size="sm" className="mr-2" onClick={this.editSongList.bind(this, songList._id, songList.title, songList.artist,songList.album,songList.releaseDate,songList.downloadDate)}>Edit</Button>
+                      <Button color="danger" size="sm">Delete</Button>
+                    </td>
+                  </tr>
+              )
             })
 
             // let songLists = ""
@@ -289,9 +382,136 @@ class PlayListComponent extends Component {
                 <Button color="secondary" onClick={this.toggleeditPlayListModal.bind(this)}>Cancel</Button>
               </ModalFooter>
             </Modal>
-            
-            <Modal isOpen={this.state.SongModal} toggle={this.toggleSongModal.bind(this)}>
-            <Table>
+
+            <Modal isOpen={this.state.editSongListModal} toggle={this.toggleeditSongListModal.bind(this)} >
+              <ModalHeader toggle={this.toggleeditSongListModal.bind(this)}> PlayList</ModalHeader>
+    
+              <ModalBody>
+                <FormGroup>
+                  <Label for="title">Title</Label>
+                  <Input id="title" placeholder = "Title" value={this.state.editsongListData.title} onChange={(e) => {
+    
+                    let { editsongListData } = this.state;
+    
+                    editsongListData.title = e.target.value;
+    
+                    this.setState({ editsongListData });
+                  }} />
+    
+                  <Label for="artist">Artist</Label>
+                  <Input id="artist" placeholder = "Artist" value={this.state.editsongListData.artist} onChange={(e) => {
+    
+                    let { editsongListData } = this.state;
+    
+                    editsongListData.artist = e.target.value;
+    
+                    this.setState({ editsongListData });
+                  }} />
+
+                  <Label for="album">Album</Label>
+                  <Input id="album" placeholder = "Album" value={this.state.editsongListData.album} onChange={(e) => {
+    
+                    let { editsongListData } = this.state;
+    
+                    editsongListData.album = e.target.value;
+    
+                    this.setState({ editsongListData });
+                  }} />
+
+                  <Label for="ReleaseDate">ReleaseDate</Label>
+                  <Input id="ReleaseDate" placeholder = "ReleaseDate" value={this.state.editsongListData.releaseDate} onChange={(e) => {
+    
+                    let { editsongListData } = this.state;
+    
+                    editsongListData.releaseDate = e.target.value;
+    
+                    this.setState({ editsongListData });
+                  }} />
+
+                 <Label for="DownloadDate">DownloadDate</Label>
+                  <Input id="DownloadDate" placeholder = "DownloadDate" value={this.state.editsongListData.downloadDate} onChange={(e) => {
+    
+                    let { editsongListData } = this.state;
+    
+                    editsongListData.downloadDate = e.target.value;
+    
+                    this.setState({ editsongListData });
+                  }} />
+
+                </FormGroup>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="primary" onClick={this.updateSong.bind(this)}>Update PlayList</Button>{' '}
+                <Button color="secondary" onClick={this.toggleeditSongListModal.bind(this)}>Cancel</Button>
+              </ModalFooter>
+            </Modal>
+
+            <Modal isOpen={this.state.newSongListModal} toggle={this.toggleNewSongListModal.bind(this)} >
+              <ModalHeader toggle={this.toggleNewSongListModal.bind(this)}> PlayList</ModalHeader>
+    
+              <ModalBody>
+                <FormGroup>
+                  <Label for="title">Title</Label>
+                  <Input id="title" placeholder = "Title" value={this.state.newSongListData.title} onChange={(e) => {
+    
+                    let { newSongListData } = this.state;
+    
+                    newSongListData.title = e.target.value;
+    
+                    this.setState({ newSongListData });
+                  }} />
+    
+                  <Label for="artist">Artist</Label>
+                  <Input id="artist" placeholder = "Artist" value={this.state.newSongListData.artist} onChange={(e) => {
+    
+                    let { newSongListData } = this.state;
+    
+                    newSongListData.artist = e.target.value;
+    
+                    this.setState({ newSongListData });
+                  }} />
+
+                  <Label for="album">Album</Label>
+                  <Input id="album" placeholder = "Album" value={this.state.newSongListData.album} onChange={(e) => {
+    
+                    let { newSongListData } = this.state;
+    
+                    newSongListData.album = e.target.value;
+    
+                    this.setState({ newSongListData });
+                  }} />
+
+                  <Label for="ReleaseDate">ReleaseDate</Label>
+                  <Input id="ReleaseDate" placeholder = "ReleaseDate" value={this.state.newSongListData.releaseDate} onChange={(e) => {
+    
+                    let { newSongListData } = this.state;
+    
+                    newSongListData.releaseDate = e.target.value;
+    
+                    this.setState({ newSongListData });
+                  }} />
+
+                 <Label for="DownloadDate">DownloadDate</Label>
+                  <Input id="DownloadDate" placeholder = "DownloadDate" value={this.state.newSongListData.downloadDate} onChange={(e) => {
+    
+                    let { newSongListData } = this.state;
+    
+                    newSongListData.downloadDate = e.target.value;
+    
+                    this.setState({ newSongListData });
+                  }} />
+
+                </FormGroup>
+              </ModalBody>
+              <ModalFooter>
+              <Button color="primary" onClick={this.addNewSong.bind(this)}>Add Song</Button>{' '}
+                <Button color="secondary" onClick={this.toggleNewSongListModal.bind(this)}>Cancel</Button>
+              </ModalFooter>
+            </Modal>
+
+            <Modal isOpen={this.state.songModal} toggle={this.toggleSongModal.bind(this)}>
+            <ModalHeader toggle={this.toggleSongModal.bind(this)}>Edit </ModalHeader>
+            <Table responsive>
           <thead>
             <tr>
               <th style={{color: '#888888'}}>Title</th>
@@ -302,10 +522,12 @@ class PlayListComponent extends Component {
             </tr>
           </thead>
 
-          <tbody  style={{color: 'red'}}>
-            {/* {songLists} */}
+          <tbody>
+            {songLists} 
           </tbody>
-        </Table>
+          <Button color="primary"onClick={this.toggleNewSongListModal.bind(this)}>Add a new song</Button>
+        </Table> 
+
             </Modal>
 
 
