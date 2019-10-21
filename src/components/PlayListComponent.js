@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Input, FormGroup, Label, Modal, ModalHeader, ModalBody, ModalFooter, Table, Button } from 'reactstrap';
 import { request } from 'http';
-
 class PlayListComponent extends Component {
     state = {
         playLists: [],
@@ -252,7 +251,8 @@ class PlayListComponent extends Component {
             let playLists = this.state.playLists.map((playList) => {                                          
               return(
                   <tr key={playList.id}>            
-                  <h3 className="leftMenu" onClick={this.getSongs.bind(this, playList._id), this.mapReduce.bind(this,playList.name)}><td>{playList.name}</td></h3>
+                  {/* <h3 className="leftMenu" onClick={this.getSongs.bind(this, playList._id), this.mapReduce.bind(this,playList.name)}><td>{playList.name}</td></h3> */}
+                  <h3 className="leftMenu" onClick={this.getSongs.bind(this, playList._id) }><td>{playList.name}</td></h3>
                   <td>
                     <Button color="success" size="sm" className="mr-2" onClick={this.editPlayList.bind(this, playList._id, playList.name, playList.description)}>Edit</Button>
                     <Button color="danger" size="sm" onClick={this.deletePlayList.bind(this, playList._id)}>Delete</Button>
@@ -288,7 +288,7 @@ class PlayListComponent extends Component {
               <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
               <style dangerouslySetInnerHTML={{__html: "\n    .main{\n      position: relative;\n      text-align: center;\n      color: white;\n    }\n\n    .LeftMenuBar{\n      position: absolute;\n      top: 8px;\n      left: 16px;\n      margin-left:0%;\n      text-align: left;\n      border-right: 2px solid #f5f5f5;\n      width: 15%;\n      height: 100%;\n    }\n\n    .btn {\n      background-color: Green;\n      border: none;\n      color: white;\n      padding: 5px 5px;\n      font-size: 16px;\n      cursor: pointer;\n      border-radius: 5%;\n    }\n    .btn1{\n\n      width:30px;\n      height:30px;\n      border: 2px solid #f5f5f5;\n      border-radius: 50%;\n      color:white;\n      background-color: green;\n      text-align:center;\n      text-decoration:none;\n      box-shadow: 0 0 3px gray;\n      font-weight:bold;\n      cursor: pointer;\n\n    }\n\n    .btn:hover {\n      background-color: RoyalBlue;\n    }\n    .btn1:hover{\n      background-color: RoyalBlue;\n    }\n    .leftMenu:hover{\n      background-color: Green;\n      cursor: pointer;\n    }\n\n    h3{\n\n      color: white;\n      font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;\n    }\n\n    .createBtn{\n    border-top:  2px solid #f5f5f5;\n    }\n     #playListForm{\n      border-radius: 5px;\n      background-color: white;\n      /*padding: 20px;*/\n      font-family: Georgia, serif;\n      width: 0%;\n      margin-left: auto;\n      margin-right: auto;\n      display: block;\n       overflow-x: hidden;\n       z-index: 1;\n       transition:width 0.9s;\n       top: 0;\n       right: 0;\n       position: fixed;\n    }\n\n    #Name {\n      width: 100%;\n      padding: 12px 20px;\n      margin: 8px 0;\n      display: inline-block;\n      border: 1px solid #ccc;\n      box-sizing: border-box;\n    }\n    #Description {\n      width: 100%;\n      padding: 12px 20px;\n      margin: 8px 0;\n      display: inline-block;\n      border: 1px solid #ccc;\n      box-sizing: border-box;\n\n    }\n\n    .btn2{\n      background-color: #4CAF50;\n      color: white;\n      padding: 12px 20px;\n      border: none;\n      border-radius: 4px;\n      cursor: pointer;\n      margin-left: 45%;\n      margin-top: 2%;\n    }\n  " }} />
               <title>My Playlist Application</title>
-              <h1 style={{textAlign: 'center', fontFamily: 'Lucida Sans Unicode, Lucida Grande, sans-serif', color: 'white'}}> Playlist Application </h1>
+              <h1 style={{textAlign: 'center', fontFamily: 'Lucida Sans Unicode, Lucida Grande, sans-serif', color: 'white'}}> Playlist Application </h1>  
               <div className="main">
                 <img src= {require('./main.png')} alt="main" style={{width: '70%', marginLeft: '15%'}} />
                 <div className="LeftMenuBar">
@@ -534,7 +534,9 @@ class PlayListComponent extends Component {
         </Table> 
 
             </Modal>
-
+            <footer>
+    <p class="copyright">© Petrit Krasniqi 2019</p>
+</footer>
 
             </div>
             
