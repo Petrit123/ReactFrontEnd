@@ -59,13 +59,6 @@ class PlayListComponent extends Component {
             playLists:response.data
           });
         });
-
-        axios.get('http://localhost:8080/playlist').then((response) =>{
-          this.setState({
-            songs:response.data
-          });
-        });
-
       }
 
       toggleNewPlayListModal() {
@@ -177,7 +170,7 @@ class PlayListComponent extends Component {
       
       editPlayList(id,name, description){
         this.setState({
-          editPlayListData:{id,name, description,id}, editPlayListModal: ! this.state.editPlayListModal
+          editPlayListData:{id,name, description}, editPlayListModal: ! this.state.editPlayListModal
         });
       }
 
@@ -219,7 +212,7 @@ class PlayListComponent extends Component {
             id: id
           }
         }).then((response) =>{
-          // console.log(response.data.songList)
+          console.log(response.data.songList)
 
           this.setState({
             songLists:response.data.songList, songModal: !this.state.songModal, songsID:response.data._id, playListName: response.data.name
@@ -234,7 +227,7 @@ class PlayListComponent extends Component {
           }
         }).then((response) =>{
           this.setState({
-            noSongs: response.data
+            noSongs: response.data, songModal: !this.state.songModal
           })
           console.log(response.data);
         })
@@ -254,7 +247,7 @@ class PlayListComponent extends Component {
                   {/* <h3 className="leftMenu" onClick={this.getSongs.bind(this, playList._id), this.mapReduce.bind(this,playList.name)}><td>{playList.name}</td></h3> */}
                   <h3 className="leftMenu" onClick={this.getSongs.bind(this, playList._id) }><td>{playList.name}</td></h3>
                   <td>
-                    <Button color="success" size="sm" className="mr-2" onClick={this.editPlayList.bind(this, playList._id, playList.name, playList.description)}>Edit</Button>
+                    <Button color="success" size="sm" className="mr-2" onClick={this.editPlayList.bind(this, playList._id,playList.name, playList.description)}>Edit</Button>
                     <Button color="danger" size="sm" onClick={this.deletePlayList.bind(this, playList._id)}>Delete</Button>
                   </td>
                 </tr>
@@ -447,7 +440,7 @@ class PlayListComponent extends Component {
                 </FormGroup>
               </ModalBody>
               <ModalFooter>
-                <Button color="primary" onClick={this.editSongsList.bind(this)}>Update PlayList 3</Button>{' '}
+                <Button color="primary" onClick={this.editSongsList.bind(this)}>Update PlayList</Button>{' '}
                 <Button color="secondary" onClick={this.toggleeditSongListModal.bind(this)}>Cancel</Button>
               </ModalFooter>
             </Modal>
